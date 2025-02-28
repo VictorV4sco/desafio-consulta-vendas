@@ -16,7 +16,7 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
 		       "WHERE (:minDate IS NULL OR obj.date >= :minDate) " +
 		       "AND (:maxDate IS NULL OR obj.date <= :maxDate) " +
 		       "AND (:sellerName IS NULL OR LOWER(obj.seller.name) LIKE LOWER(CONCAT('%', :sellerName, '%')))")
-		Page<Sale> searchSales(
+		Page<Sale> searchBySales(
 		        @Param("minDate") LocalDate minDate,
 		        @Param("maxDate") LocalDate maxDate,
 		        @Param("sellerName") String sellerName,
