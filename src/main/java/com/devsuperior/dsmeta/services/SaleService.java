@@ -3,6 +3,7 @@ package com.devsuperior.dsmeta.services;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.devsuperior.dsmeta.dto.SaleMinDTO;
+import com.devsuperior.dsmeta.dto.SummaryDTO;
 import com.devsuperior.dsmeta.entities.Sale;
 import com.devsuperior.dsmeta.repositories.SaleRepository;
 
@@ -27,13 +29,18 @@ public class SaleService {
 	}
 	
 	public Page<SaleMinDTO> findSales(String minDate, String maxDate, String sellerName, Pageable pageable) {
-		LocalDate today = LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault());
-		LocalDate max = (maxDate == null || maxDate.trim().isEmpty()) ? today : LocalDate.parse(maxDate);
-		LocalDate min = (minDate == null || minDate.trim().isEmpty()) ? max.minusYears(1L) : LocalDate.parse(minDate);
-		//sellerName = (sellerName == null || sellerName.trim().isEmpty()) ? "" : sellerName;
-		
-		Page<Sale> result = repository.searchBySales(min, max, sellerName, pageable);
-		
-		return result.map(x -> new SaleMinDTO(x));
+		LocalDate max = maxDate.isEmpty() ? LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault()) : LocalDate.parse(maxDate);
+		LocalDate min = minDate.isEmpty() ? max.minusYears(1L) : LocalDate.parse(minDate);
+	
+		return repository.searchBySales(min, max, sellerName, pageable);
 	}
+	
+	public List<SummaryDTO> findSallerAmount(String minDate, String maxDate) {
+        LocalDate max = maxDate.isEmpty() ? LocalDate.ofInstant(Instant.now(), ZoneId.systemDefault()) : LocalDate.parse(maxDate);
+        LocalDate min = minDate.isEmpty() ? max.minusYears(1L) : LocalDate.parse(minDate);
+
+        return repository.findSalesGroupedBySellerAndDate(min, max);
+    }
+	
+	
 }
